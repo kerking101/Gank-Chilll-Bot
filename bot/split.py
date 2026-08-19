@@ -2403,9 +2403,14 @@ def register_split(bot: commands.Bot) -> None:
             body = body[:3600] + "\n…"
 
         if copy_lines and len(copy_lines) <= 20:
-            body += "\n\n**Copy for in-game pay:**\n```\n" + "\n".join(copy_lines) + "\n```"
+            copy_block = "\n\n**Copy for in-game pay:**\n```\n" + "\n".join(copy_lines) + "\n```"
+            if len(body) + len(copy_block) <= 1950:
+                body += copy_block
 
-        await interaction.response.send_message(body[:4000], ephemeral=True)
+        if len(body) > 2000:
+            body = body[:1990] + "\n…"
+
+        await interaction.response.send_message(body, ephemeral=True)
 
     @bot.tree.command(name="balance-history", description="Show ledger history (own, or Mod lookup)")
     @app_commands.describe(player="Mod only: look up another player")
