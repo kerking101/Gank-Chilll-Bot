@@ -2356,6 +2356,29 @@ def register_split(bot: commands.Bot) -> None:
         )
         await interaction.response.send_message(f"**{name}**: {msg}", ephemeral=True)
 
+    class _WhoOwesView(discord.ui.View):
+        def __init__(self, pages: list[str]):
+            super().__init__(timeout=120)
+            self.pages = pages
+            self.page = 0
+            self._update_buttons()
+
+        def _update_buttons(self):
+            self.prev_btn.disabled = self.page == 0
+            self.next_btn.disabled = self.page >= len(self.pages) - 1
+
+        @discord.ui.button(label="◀ Prev", style=discord.ButtonStyle.secondary)
+        async def prev_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.page -= 1
+            self._update_buttons()
+            await interaction.response.edit_message(content=self.pages[self.page], view=self)
+
+        @discord.ui.button(label="▶ Next", style=discord.ButtonStyle.secondary)
+        async def next_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+            self.page += 1
+            self._update_buttons()
+            await interaction.response.edit_message(content=self.pages[self.page], view=self)
+
     @bot.tree.command(name="who-owes", description="Mod: list all non-zero balances (payout checklist)")
     async def who_owes(interaction: discord.Interaction) -> None:
         if not await _require_mod(interaction):
@@ -2398,19 +2421,37 @@ def register_split(bot: commands.Bot) -> None:
                 disc = display_name_for(interaction.guild, uid)
                 lines.append(f"• `{ign}` — `{format_silver(bal)}` · {disc}")
 
-        body = "\n".join(lines)
-        if len(body) > 3600:
-            body = body[:3600] + "\n…"
+        if copy_lines:
+            lines.append("")
+            lines.append("**Copy for in-game pay:**")
+            lines.append("```")
+            lines.extend(copy_lines)
+            lines.append("```")
 
-        if copy_lines and len(copy_lines) <= 20:
-            copy_block = "\n\n**Copy for in-game pay:**\n```\n" + "\n".join(copy_lines) + "\n```"
-            if len(body) + len(copy_block) <= 1950:
-                body += copy_block
+        # Paginate into chunks that fit Discord's 2000 char limit
+        pages: list[str] = []
+        current = ""
+        for line in lines:
+            candidate = (current + "\n" + line) if current else line
+            if len(candidate) > 1900:
+                pages.append(current)
+                current = line
+            else:
+                current = candidate
+        if current:
+            pages.append(current)
 
-        if len(body) > 2000:
-            body = body[:1990] + "\n…"
+        if not pages:
+            pages = ["No data."]
 
-        await interaction.response.send_message(body, ephemeral=True)
+        for i, p in enumerate(pages):
+            pages[i] = p + f"\n\n*Page {i+1}/{len(pages)}*"
+
+        if len(pages) == 1:
+            await interaction.response.send_message(pages[0], ephemeral=True)
+        else:
+            view = _WhoOwesView(pages)
+            await interaction.response.send_message(pages[0], view=view, ephemeral=True)
 
     @bot.tree.command(name="balance-history", description="Show ledger history (own, or Mod lookup)")
     @app_commands.describe(player="Mod only: look up another player")
