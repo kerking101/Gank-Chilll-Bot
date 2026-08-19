@@ -1,0 +1,13 @@
+.venv/
+.env
+.env.*
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+.idea/
+*.zip
+
+# Live balances / IGNs / splits stay on the host, not in GitHub
+data/*.json
+data/*.json.tmp

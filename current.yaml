@@ -1,0 +1,181 @@
+roles:
+  - name: Mod
+    color: "#e91e63"
+    hoist: true
+    permissions: [administrator]
+
+  - name: Member
+    color: "#f1c40f"
+    hoist: true
+    permissions:
+      - read_messages
+      - send_messages
+      - read_message_history
+      - add_reactions
+      - embed_links
+      - attach_files
+      - external_emojis
+      - external_stickers
+      - connect
+      - speak
+      - stream
+      - use_voice_activation
+      - use_application_commands
+      - create_public_threads
+      - send_messages_in_threads
+      - send_polls
+
+  - name: Unregistered
+    color: "#95a5a6"
+    hoist: false
+    permissions: []
+
+content_roles:
+  - { name: Ganking,    emoji: "🗡️", color: "#c0392b" }
+  - { name: Gathering,  emoji: "🌿", color: "#27ae60" }
+  - { name: Roaming,    emoji: "🗺️", color: "#2980b9" }
+  - { name: Static,     emoji: "🏛️", color: "#8e44ad" }
+  - { name: Ava Roads,  emoji: "🟣", color: "#9b59b6" }
+  - { name: TabBuyer,   emoji: "💰", color: "#f39c12" }
+
+combat_roles:
+  - { name: Healer,  emoji: "💚", color: "#2ecc71" }
+  - { name: Dps,     emoji: "💥", color: "#e74c3c" }
+  - { name: Tank,    emoji: "🛡️", color: "#3498db" }
+  - { name: Support, emoji: "✨", color: "#9b59b6" }
+
+albion_servers:
+  - EU
+  - Americas
+  - Asia
+
+# Auto ping before events — reads your normal host posts (role ping + <t:unix>)
+host_reminders:
+  enabled: true
+  minutes_before: 15
+
+ign_verification:
+  enabled: true
+  timeout_seconds: 12
+
+obsolete_channels:
+  - ZvZ Call
+  - ZvZ
+  - "📁・logs"
+  - "ℹ️・welcome"
+  - welcome
+
+# Category order = sidebar order (Info always first)
+categories:
+  "ℹ️ Info":
+    # Join popup → ping/combat roles first, then Albion IGN register for Member
+    - name: "🔔・pings-roles"
+      type: text
+      panel: roles
+      locked: true
+      onboarding_default: true
+      onboarding_first: true
+      rename_from: [pings-roles]
+    - name: "📝・register"
+      type: text
+      pre_register: true
+      locked: true
+      onboarding_default: true
+      panel: register
+      rename_from: [register]
+    - name: "📢・announcements"
+      type: text
+      locked: true
+      onboarding_default: true
+      rename_from: [announcements]
+    - name: "📜・rules"
+      type: text
+      locked: true
+      onboarding_default: true
+      rename_from: [rules]
+    - name: "📖・bot-guide"
+      type: text
+      locked: true
+      onboarding_default: true
+      panel: guide_member
+      rename_from: [bot-guide, guide, "📖・guide"]
+    - name: "💬・help"
+      type: text
+      # Anyone (including Unregistered) can ask if something breaks
+      guest_chat: true
+      onboarding_default: true
+      rename_from: [help, "💬・help"]
+    - name: "📖・staff-guide"
+      type: text
+      staff_only: true
+      locked: true
+      panel: guide_admin
+      rename_from: [staff-guide, admin-guide, "📖・admin-guide"]
+
+  "💬 Community":
+    - name: "💥・host-content"
+      type: text
+      # Content-role holders host in channel; Members sign up in threads; guests can read
+      host_content: true
+      rename_from: [host-content, "host content", "📣・host-content"]
+    - name: "💬・general"
+      type: text
+      rename_from: [general]
+    - name: "❓・questions"
+      type: text
+      rename_from: [questions, "❓・questions"]
+    - name: "🛒・market"
+      type: text
+      rename_from: [market, "🛒・market"]
+    - name: "🎲・off-topic"
+      type: text
+      rename_from: [off-topic]
+    - name: "🎬・clips"
+      type: text
+      rename_from: [clips]
+
+  "🔊 Voice":
+    - name: "➕・Create VC"
+      type: voice
+      temp_voice_hub: true
+      rename_from: ["Create VC", "➕・Create VC"]
+    - name: "🛋️・Chill"
+      type: voice
+      rename_from: [General, "🔊・General", "🎤・Lounge", "🛋️・Chill"]
+    - name: "🗡️・Gank Squad"
+      type: voice
+      rename_from: ["Gank Squad", "🗡️・Gank Squad", "🗡️・Gank Squad｜PTT"]
+
+  "📦 Resources":
+    # Official builds — mods post only (no random threads/reactions)
+    - name: "🛠️・builds"
+      type: forum
+      locked: true
+      rename_from: [builds, "🛠️・builds", "🥼builds", "🥼・builds"]
+    # Scratchpad for trying comps
+    - name: "🧪・test-builds"
+      type: forum
+      rename_from: [test-builds, "test builds"]
+    # Bot loot-split sheets
+    - name: "📋・lootsplit"
+      type: forum
+      rename_from: [splits, "📋・splits", "loot-split", "📋・lootsplit"]
+    # Pre-bot manual unpaid splits — keep as archive (do not wipe)
+    - name: "📋・lootsplit-manual"
+      type: text
+      locked: true
+      rename_from: [lootsplit, "📋・lootsplit-manual"]
+
+  "🛠️ Staff":
+    # Discord-required Community channel (system notices for admins) — don't delete
+    - name: "📡・discord-updates"
+      type: text
+      staff_only: true
+      community_updates: true
+      rename_from: ["📡・discord-updates", logs]
+
+    # Mod discussion — kept at the bottom of Staff
+    - name: "🛡️・mod-chat"
+      type: text
+      staff_only: true
+      rename_from: [mod-chat, "🛡️・mod-chat"]
